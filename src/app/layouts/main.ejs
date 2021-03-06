@@ -59,13 +59,15 @@
       (function () {
         'use strict';
 
-        window.appData = {};
-        window.appMethods = {};
+        var bundle = window.Bundle || {
+          data: {},
+          methods: {},
+        }
 
         new Vue({
           el: '#app',
-          data: window.appData,
-          methods: window.appMethods,
+          data: bundle.data || {},
+          methods: bundle.methods || {},
         });
       }());
     </script>
