@@ -20,6 +20,7 @@ app.set('layout', path.join(__dirname, './app/layouts/main'));
 const routes = {};
 routes.app = require('./app/routes');
 routes.api = require('./api/routes');
+app.use('/', express.static(path.join(__dirname, 'public')));
 app.use('/', routes.app);
 app.use('/api/', routes.api);
 
