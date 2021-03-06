@@ -53,11 +53,20 @@
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17/lodash.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6/dist/vue.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-vue@2.21/dist/bootstrap-vue.min.js"></script>
-    <%- defineContent("ContentTemplates") %>
-    <script type="text/javascript">
-      'use strict';
-      var __app = new Vue({ el: '#app' });
-    </script>
     <%- defineContent("ContentScripts") %>
+    <script type="text/javascript">
+      (function () {
+        'use strict';
+
+        window.appData = {};
+        window.appMethods = {};
+
+        new Vue({
+          el: '#app',
+          data: window.appData,
+          methods: window.appMethods,
+        });
+      }());
+    </script>
   </body>
 </html>
