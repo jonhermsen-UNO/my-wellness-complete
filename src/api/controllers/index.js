@@ -21,7 +21,7 @@ controller.getWellness = (request, response) => {
       const dates = getDateRange();
       const aggregateData = {
         aggregateBy: [],
-        bucketByTime: { durationMillis: 2 * 24 * 60 * 60 * 1000 }, // 2 days
+        bucketByTime: { durationMillis: 2 * 24 * 60 * 60 * 1000 }, // 48 hours
         startTimeMillis: dates.start.getTime(),
         endTimeMillis: dates.end.getTime(),
       };
@@ -76,13 +76,11 @@ function getToken(request) {
 }
 
 function getDateRange() {
-  // start date is the beginning of today, less three days
-  const start = new Date();
-  start.setHours(0, 0, 0, 0);
-  start.setDate(start.getDate() - 3);
-
-  // end date is now
+  // end time is current time
   const end = new Date();
+  // start time is 48 hours prior
+  const start = new Date();
+  start.setDate(start.getDate() - 2);
 
   return { start: start, end: end };
 }
