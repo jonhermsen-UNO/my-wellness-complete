@@ -4,8 +4,8 @@ const controller = {};
 controller.getHome = (request, response) => {
   const view = getView('/main');
   const fields = {
-    pageTitle: 'My Complete Wellness',
-    pageDescription: 'Welcome to My Complete Wellness, a total wellness tracker that integrates with Google Fit!',
+    pageTitle: 'My Wellness Complete',
+    pageDescription: 'Welcome to My Wellness Complete, a total wellness tracker that integrates with Google Fit!',
     profile: getProfile(request),
   };
 
