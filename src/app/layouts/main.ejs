@@ -85,19 +85,18 @@
         'use strict';
 
         var noop = () => {};
-        var bundle = window.Bundle || {
-          data: {},
-          methods: {},
-          mounted: noop,
-        };
+        var bundle = window.Bundle || {};
+        if (!bundle.data) bundle.data = {};
+        if (!bundle.methods) bundle.methods = {};
+        if (!bundle.mounted) bundle.mounted = noop;
 
         bundle.data.profile = JSON.parse('<%- JSON.stringify(profile) %>');
 
         new Vue({
           el: '#app',
-          data: bundle.data || {},
-          methods: bundle.methods || {},
-          mounted: bundle.mounted || noop,
+          data: bundle.data,
+          methods: bundle.methods,
+          mounted: bundle.mounted,
         });
       })();
     </script>
