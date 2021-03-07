@@ -10,6 +10,6 @@ router.route('/vocational').get(controller.getStub);
 router.route('/emotional').get(controller.getStub);
 router.route('/social').get(controller.getStub);
 router.route('/physical').get(controller.getStub);
-router.route('/mental').get(controller.getStub);
+router.route('/mental').get(controller.getMental);
 
 module.exports = router;

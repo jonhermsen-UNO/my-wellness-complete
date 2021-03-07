@@ -91,6 +91,26 @@
     <script src="https://cdn.jsdelivr.net/npm/moment@2.29/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6/dist/vue.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-vue@2.21/dist/bootstrap-vue.min.js"></script>
+    <script type="text/javascript">
+      'use strict';
+
+      var storageKey = 'wellness';
+      var defaultObject = { wellness: [] };
+
+      function loadFromLocalStorage() {
+        return JSON.parse(localStorage.getItem(storageKey) || JSON.stringify(defaultObject));
+      }
+
+      function saveToLocalStorage(array) {
+        if (!_.isArray(array)) return false;
+
+        var data = _.cloneDeep(defaultObject);
+        data.wellness = array;
+
+        localStorage.setItem(storageKey, JSON.stringify(data));
+        return true;
+      }
+    </script>
     <%- defineContent("ContentScripts") %>
     <script type="text/javascript">
       (function () {

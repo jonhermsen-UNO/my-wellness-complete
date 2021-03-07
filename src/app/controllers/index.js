@@ -13,6 +13,17 @@ controller.getHome = (request, response) => {
   response.render(view, fields);
 };
 
+controller.getMental = (request, response) => {
+  const view = getView(`/${request.path}`);
+  const fields = {
+    pageTitle: `Wellness Dimension: ${_.startCase(request.path)}`,
+    pageDescription: 'Wellness Dimension: ${_.startCase(request.path)}',
+    profile: getProfile(request),
+  };
+
+  response.render(view, fields);
+};
+
 // a single stub is used for all modules that still need implemented
 controller.getStub = (request, response) => {
   const view = getView('/stub');
