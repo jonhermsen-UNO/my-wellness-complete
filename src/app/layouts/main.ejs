@@ -65,6 +65,7 @@
       </header>
       <section class="container flex-grow-1 py-3">
         <h1 class="border-bottom border-primary mb-3"><%= pageTitle %></h1>
+        <b-alert v-if="alert" v-bind:variant="alert.variant" show>{{ alert.message }}</b-alert>
         <%- body %>
       </section>
       <footer>
@@ -91,6 +92,7 @@
         if (!bundle.mounted) bundle.mounted = noop;
 
         bundle.data.profile = JSON.parse('<%- JSON.stringify(profile) %>');
+        bundle.data.alert = bundle.data.alert || false;
 
         new Vue({
           el: '#app',

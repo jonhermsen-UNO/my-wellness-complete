@@ -6,7 +6,8 @@ controller.getWellness = (request, response) => {
   const token = getToken(request);
 
   // early return if the user is not logged in
-  if (!token) return response.status(403).json({ type: 'warning', message: 'You must login to check your wellness.' });
+  if (!token)
+    return response.status(403).json({ variant: 'primary', message: 'You must login to check your wellness.' });
 
   const headers = { headers: { authorization: 'Bearer ' + token } };
   const URL = {
@@ -34,7 +35,7 @@ controller.getWellness = (request, response) => {
       });
 
       if (!aggregateData.aggregateBy)
-        return response.status(404).json({ type: 'info', message: 'You do not have any wellness data.' });
+        return response.status(404).json({ variant: 'primary', message: 'You do not have any wellness data.' });
 
       axios
         .post(URL.datasets, aggregateData, headers)
@@ -54,11 +55,11 @@ controller.getWellness = (request, response) => {
           return response.json({ wellness });
         })
         .catch((_) => {
-          return response.status(500).json({ type: 'warning', message: 'Google Fit refused this request' });
+          return response.status(500).json({ variant: 'danger', message: 'Google Fit refused this request' });
         });
     })
     .catch((_) => {
-      return response.status(500).json({ type: 'warning', message: 'Google Fit refused this request' });
+      return response.status(500).json({ variant: 'danger', message: 'Google Fit refused this request' });
     });
 };
 
