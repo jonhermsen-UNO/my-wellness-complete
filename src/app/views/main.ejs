@@ -4,20 +4,20 @@
   </b-col>
   <b-col v-for="event in wellness" cols="12" sm="6" lg="4" class="mb-3">
     <b-card no-body class="h-100">
-      <b-card-body>
-        <b-card-title>Wellness Event</b-card-title>
-        <b-card-sub-title class="mb-2">{{ event.dataTypeName }}</b-card-sub-title>
-        <b-card-text>
-          <b>Start:</b> {{ new Date(event.startTimeNanos / 1000000).toLocaleString() }}<br />
-          <b>Stop:</b> {{ new Date(event.endTimeNanos / 1000000).toLocaleString() }}
-        </b-card-text>
+      <b-card-body class="pb-0">
+        <b-card-title>{{ event.title }}</b-card-title>
+        <b-card-sub-title class="mb-2">Wellness Event</b-card-sub-title>
       </b-card-body>
       <b-list-group flush>
-        <b-list-group-item v-for="value in event.value">{{ value }}</b-list-group-item>
+        <b-list-group-item>
+          <b class="w-25 d-inline-block">Between:</b>
+          {{ event.startTime }}<br />
+          <div class="w-25 d-inline-block">&nbsp;</div>
+          {{ event.endTime }}
+        </b-list-group-item>
+        <b-list-group-item><b class="w-25 d-inline-block">Value:</b> {{ event.total }}</b-list-group-item>
       </b-list-group>
-      <b-card-footer>
-        {{ (event.originDataSourceId || '').split(':').join(' | ') }}
-      </b-card-footer>
+      <b-card-footer class="text-truncate" v-bind:title="event.source">{{ event.source }}</b-card-footer>
     </b-card>
   </b-col>
 </b-row>
@@ -31,11 +31,55 @@
     var data = {};
     data.wellness = [];
 
+    function transform(data) {
+      // ignore merge data
+      data = _.filter(data, function (obj) {
+        return !_.includes(obj.originDataSourceId, ':merge_') && !_.includes(obj.dataTypeName, 'speed.summary');
+      });
+      // ignore duplicate data
+      data = _.uniqBy(data, JSON.stringify);
+      // transform the data for usage
+      return _.reduce(
+        data,
+        function (memo, record) {
+          var event = {},
+            nanoPerMilli = 1000000;
+
+          // transform the start and end time into a locale string
+          event.startTime = moment(record.startTimeNanos / nanoPerMilli).format('MMM DD, YYYY HH:mm A');
+          event.endTime = moment(record.endTimeNanos / nanoPerMilli).format('MMM DD, YYYY HH:mm A');
+          // transform the data type name into an event title
+          var title = record.dataTypeName || '';
+          title = title.replace('com.google.', '').replace(/\./g, '_').replace('_delta', '');
+          event.title = _.startCase(title);
+          // clean and delimit the data source
+          var source = (record.originDataSourceId || '').split(':');
+          source.shift(); // ignore type
+          event.source = source.join(' | ').replace(/com\..*?\./g, '');
+
+          var total = 0;
+          _.forEach(record.value, function (value) {
+            _.forOwn(value, function (obj) {
+              if (typeof obj === 'number') total += obj;
+            });
+          });
+          if (total >= 3600000) total = moment.duration(total).humanize(); // 1 hour
+          if (total >= 60000) total = moment.duration(total).humanize(); // 1 minute
+          if (typeof total === 'number' && _.includes(event.title, 'Minutes')) total = `${total} minutes`;
+          event.total = total;
+
+          memo.push(event);
+          return memo;
+        },
+        []
+      );
+    }
+
     function mounted() {
       axios
         .get('/api/wellness')
         .then((response) => {
-          if (response.data) this.wellness = response.data.wellness;
+          if (response.data) this.wellness = transform(response.data.wellness);
         })
         .catch((error) => {
           this.alert = error.response.data;
