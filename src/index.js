@@ -61,7 +61,19 @@ routes.api = require('./api/routes');
 app.use('/app/', express.static(path.join(__dirname, 'public')));
 app.use('/app/', routes.app);
 app.use('/api/', routes.api);
-app.get('/login', passport.authenticate('google', { scope: ['profile'] }));
+app.get(
+  '/login',
+  passport.authenticate('google', {
+    scope: [
+      'profile',
+      'https://www.googleapis.com/auth/fitness.activity.read',
+      'https://www.googleapis.com/auth/fitness.body.read',
+      'https://www.googleapis.com/auth/fitness.heart_rate.read',
+      'https://www.googleapis.com/auth/fitness.nutrition.read',
+      'https://www.googleapis.com/auth/fitness.sleep.read',
+    ],
+  })
+);
 app.get('/login/redirect', passport.authenticate('google', { successRedirect: '/', failureRedirect: '/' }));
 app.get('/logout', (request, response) => {
   request.logout();
