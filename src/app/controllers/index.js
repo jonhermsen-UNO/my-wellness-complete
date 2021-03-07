@@ -27,7 +27,7 @@ function getProfile(request) {
   };
 
   if (request && request.session && request.session.passport && request.session.passport.user) {
-    const user = request.session.passport.user;
+    const user = request.session.passport.user.profile;
 
     profile.hasLogin = true;
     profile.name = user.displayName;

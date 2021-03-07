@@ -29,7 +29,14 @@ passport.use(
       clientSecret: keys.googleSecret,
       callbackURL: '/login/redirect',
     },
-    (accessToken, refreshToken, profile, callback) => callback(null, profile)
+    (accessToken, _, profile, callback) => {
+      const user = {
+        token: accessToken,
+        profile: profile,
+      };
+
+      return callback(null, user);
+    }
   )
 );
 app.use(passport.initialize());
