@@ -77,3 +77,4 @@ typings/
 
 # Misc files and directories
 .vscode/
+private/
