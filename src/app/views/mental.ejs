@@ -29,7 +29,7 @@
           <div class="w-25 d-inline-block">&nbsp;</div>
           {{ event.endTime }}
         </b-list-group-item>
-        <b-list-group-item><b class="w-25 d-inline-block">Value:</b> {{ event.total }}</b-list-group-item>
+        <b-list-group-item><b class="w-25 d-inline-block">Value:</b> {{ event.displayTotal }}</b-list-group-item>
       </b-list-group>
       <b-card-footer class="text-truncate" v-bind:title="event.source">{{ event.source }}</b-card-footer>
     </b-card>
@@ -79,10 +79,13 @@
               if (typeof obj === 'number') total += obj;
             });
           });
+          event.total = total;
+
+          // generate a display total
           if (total >= 3600000) total = moment.duration(total).humanize(); // 1 hour
           if (total >= 60000) total = moment.duration(total).humanize(); // 1 minute
           if (typeof total === 'number' && _.includes(event.title, 'Minutes')) total = `${total} minutes`;
-          event.total = total;
+          event.displayTotal = total;
 
           memo.push(event);
           return memo;
@@ -96,7 +99,8 @@
         startTime: moment().subtract(5, 'minutes').format('MMM DD, YYYY HH:mm A'),
         endTime: moment().format('MMM DD, YYYY HH:mm A'),
         title: 'Activity Summary',
-        source: 'activity.segment | my.complete.wellness | session.activity.mental',
+        source: 'activity.segment | my.wellness.complete | session.activity.mental',
+        displayTotal: '5 minutes',
         total: 5 * 60000, // 5 minutes
       };
 

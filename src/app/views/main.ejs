@@ -1,4 +1,8 @@
 <b-row>
+  <b-col cols="12" class="mb-3">
+    <h2>Wellness: {{ stats.percent.toFixed(1) }}%</h2>
+    <b-progress v-bind:value="stats.percent" v-bind:variant="stats.color" height="30px"></b-progress>
+  </b-col>
   <b-col cols="12" class="h5 mb-3">
     Showing <b-badge pill variant="dark">{{ wellness.length }}</b-badge> wellness events.
   </b-col>
@@ -15,7 +19,7 @@
           <div class="w-25 d-inline-block">&nbsp;</div>
           {{ event.endTime }}
         </b-list-group-item>
-        <b-list-group-item><b class="w-25 d-inline-block">Value:</b> {{ event.total }}</b-list-group-item>
+        <b-list-group-item><b class="w-25 d-inline-block">Value:</b> {{ event.displayTotal }}</b-list-group-item>
       </b-list-group>
       <b-card-footer class="text-truncate" v-bind:title="event.source">{{ event.source }}</b-card-footer>
     </b-card>
@@ -28,7 +32,9 @@
   (function () {
     'use strict';
 
-    var data = {};
+    var data = {},
+      computed = {};
+
     data.wellness = [];
 
     function transform(data) {
@@ -63,10 +69,13 @@
               if (typeof obj === 'number') total += obj;
             });
           });
+          event.total = total;
+
+          // generate a display total
           if (total >= 3600000) total = moment.duration(total).humanize(); // 1 hour
           if (total >= 60000) total = moment.duration(total).humanize(); // 1 minute
           if (typeof total === 'number' && _.includes(event.title, 'Minutes')) total = `${total} minutes`;
-          event.total = total;
+          event.displayTotal = total;
 
           memo.push(event);
           return memo;
@@ -75,18 +84,42 @@
       );
     }
 
+    computed.stats = function () {
+      var rawData = _.cloneDeep(this.wellness);
+
+      var filterData = _.filter(rawData, function (event) {
+        return _.includes(event.source, 'my.wellness.complete') || _.includes(event.source, 'sleep');
+      });
+
+      var mental = 0;
+      _.forEach(filterData, function (obj) {
+        console.log(obj);
+        mental += obj.total;
+      });
+
+      var mentalTotal = 57600000; // 16 hours over the 48 hour period
+      var result = (mental / mentalTotal) * 100;
+      var color = 'success';
+      if (result < 50) color = 'warning';
+      if (result < 15) color = 'danger';
+
+      return {
+        percent: result,
+        color: color,
+      };
+    };
+
     function mounted() {
       axios
         .get('/api/wellness')
         .then((response) => {
-          var remoteData = transform(response.data.wellness);
-          var localData = loadFromLocalStorage().wellness;
+          var data = transform(response.data.wellness);
 
-          _.forEach(remoteData, function (event) {
-            localData.push(event);
+          _.forEach(loadFromLocalStorage().wellness, function (event) {
+            data.push(event);
           });
 
-          if (response.data) this.wellness = localData;
+          if (response.data) this.wellness = data;
         })
         .catch((error) => {
           this.alert = error.response.data;
@@ -95,6 +128,7 @@
 
     window.Bundle = {
       data: data,
+      computed: computed,
       mounted: mounted,
     };
   })();

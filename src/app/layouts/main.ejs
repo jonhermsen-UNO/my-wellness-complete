@@ -120,6 +120,7 @@
         var bundle = window.Bundle || {};
         if (!bundle.data) bundle.data = {};
         if (!bundle.methods) bundle.methods = {};
+        if (!bundle.computed) bundle.computed = {};
         if (!bundle.mounted) bundle.mounted = noop;
 
         bundle.data.profile = JSON.parse('<%- JSON.stringify(profile) %>');
@@ -129,6 +130,7 @@
           el: '#app',
           data: bundle.data,
           methods: bundle.methods,
+          computed: bundle.computed,
           mounted: bundle.mounted,
         });
       })();
