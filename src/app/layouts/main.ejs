@@ -64,7 +64,7 @@
         </b-navbar>
       </header>
       <section class="container flex-grow-1 py-3">
-        <h1 class="border-bottom border-primary"><%= pageTitle %></h1>
+        <h1 class="border-bottom border-primary mb-3"><%= pageTitle %></h1>
         <%- body %>
       </section>
       <footer>
@@ -84,9 +84,11 @@
       (function () {
         'use strict';
 
+        var noop = () => {};
         var bundle = window.Bundle || {
           data: {},
           methods: {},
+          mounted: noop,
         };
 
         bundle.data.profile = JSON.parse('<%- JSON.stringify(profile) %>');
@@ -95,6 +97,7 @@
           el: '#app',
           data: bundle.data || {},
           methods: bundle.methods || {},
+          mounted: bundle.mounted || noop,
         });
       })();
     </script>
