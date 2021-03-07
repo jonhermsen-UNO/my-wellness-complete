@@ -1,0 +1,50 @@
+<b-row>
+  <b-col cols="12" class="h5 mb-3">
+    Showing <b-badge pill variant="dark">{{ wellness.length }}</b-badge> wellness events.
+  </b-col>
+  <b-col v-for="event in wellness" cols="12" sm="6" lg="4" class="mb-3">
+    <b-card no-body class="h-100">
+      <b-card-body>
+        <b-card-title>Wellness Event</b-card-title>
+        <b-card-sub-title class="mb-2">{{ event.dataTypeName }}</b-card-sub-title>
+        <b-card-text>
+          <b>Start:</b> {{ new Date(event.startTimeNanos / 1000000).toLocaleString() }}<br />
+          <b>Stop:</b> {{ new Date(event.endTimeNanos / 1000000).toLocaleString() }}
+        </b-card-text>
+      </b-card-body>
+      <b-list-group flush>
+        <b-list-group-item v-for="value in event.value">{{ value }}</b-list-group-item>
+      </b-list-group>
+      <b-card-footer>
+        {{ (event.originDataSourceId || '').split(':').join(' | ') }}
+      </b-card-footer>
+    </b-card>
+  </b-col>
+</b-row>
+
+<%- contentFor("ContentScripts") %>
+
+<script type="text/javascript">
+  (function () {
+    'use strict';
+
+    var data = {};
+    data.wellness = [];
+
+    function mounted() {
+      axios
+        .get('/api/wellness')
+        .then((response) => {
+          if (response.data) this.wellness = response.data.wellness;
+        })
+        .catch((error) => {
+          this.alert = error.response.data;
+        });
+    }
+
+    window.Bundle = {
+      data: data,
+      mounted: mounted,
+    };
+  })();
+</script>
